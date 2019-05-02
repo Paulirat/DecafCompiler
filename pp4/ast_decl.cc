@@ -16,7 +16,7 @@ bool Decl::AreEquivalent(Decl *other) {
     return true;
 }
 
-void Decl::ScopeMake(Scope *parent) {
+void Decl::ScopeMaker(Scope *parent) {
     scope->SetParent(parent);
 }
 
@@ -72,7 +72,7 @@ ClassDecl::ClassDecl(Identifier *n, NamedType *ex, List<NamedType*> *imp, List<D
     (members=m)->SetParentAll(this);
 }
 
-void ClassDecl::ScopeMake(Scope *parent) {
+void ClassDecl::ScopeMaker(Scope *parent) {
     scope->SetParent(parent);
     scope->SetClassDecl(this);
 
@@ -80,7 +80,7 @@ void ClassDecl::ScopeMake(Scope *parent) {
         scope->Add_Declaration(members->Nth(i));
 
     for (int i = 0, n = members->NumElements(); i < n; ++i)
-        members->Nth(i)->ScopeMake(scope);
+        members->Nth(i)->ScopeMaker(scope);
 }
 
 void ClassDecl::Check() {
@@ -205,14 +205,14 @@ InterfaceDecl::InterfaceDecl(Identifier *n, List<Decl*> *m) : Decl(n) {
     (members=m)->SetParentAll(this);
 }
 
-void InterfaceDecl::ScopeMake(Scope *parent) {
+void InterfaceDecl::ScopeMaker(Scope *parent) {
     scope->SetParent(parent);
 
     for (int i = 0, n = members->NumElements(); i < n; ++i)
         scope->Add_Declaration(members->Nth(i));
 
     for (int i = 0, n = members->NumElements(); i < n; ++i)
-        members->Nth(i)->ScopeMake(scope);
+        members->Nth(i)->ScopeMaker(scope);
 }
 
 void InterfaceDecl::Check() {
@@ -251,7 +251,7 @@ bool FnDecl::AreEquivalent(Decl *other) {
     return true;
 }
 
-void FnDecl::ScopeMake(Scope *parent) {
+void FnDecl::ScopeMaker(Scope *parent) {
     scope->SetParent(parent);
     scope->SetFnDecl(this);
 
@@ -259,10 +259,10 @@ void FnDecl::ScopeMake(Scope *parent) {
         scope->Add_Declaration(formals->Nth(i));
 
     for (int i = 0, n = formals->NumElements(); i < n; ++i)
-        formals->Nth(i)->ScopeMake(scope);
+        formals->Nth(i)->ScopeMaker(scope);
 
     if (body)
-        body->ScopeMake(scope);
+        body->ScopeMaker(scope);
 }
 
 void FnDecl::Check() {

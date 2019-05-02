@@ -139,7 +139,7 @@ SINGLE_COMMENT    ("//"[^\n]*)
 
 
  /* -------------------- Default rule (error) -------------------- */
-.                   { ReportError::UnrecogChar(&yylloc, yytext[0]); }
+.                   //{ ReportError::UnrecogChar(&yylloc, yytext[0]); }
 
 %%
 

@@ -29,6 +29,14 @@ Program::Program(List<Decl*> *d) {
 }
 
 void Program::Check() {
+    /* pp3: here is where the semantic analyzer is kicked off.
+     *      The general idea is perform a tree traversal of the
+     *      entire program, examining all constructs for compliance
+     *      with the semantic rules.  Each node can have its own way of
+     *      checking itself, which makes for a great use of inheritance
+     *      and polymorphism in the node classes.
+     */
+    
     ScopeMaker();
 
     for (int i = 0, n = decls->NumElements(); i < n; ++i)
@@ -95,15 +103,15 @@ void ConditionalStmt::Check() {
         ReportError::TestNotBoolean(test);
 }
 
-void LoopStatement::ScopeMaker(Scope *parent) {
+void LoopStmt::ScopeMaker(Scope *parent) {
     scope->SetParent(parent);
-    scope->SetLoopStatement(this);
+    scope->SetLoopStmt(this);
 
     test->ScopeMaker(scope);
     body->ScopeMaker(scope);
 }
 
-ForStmt::ForStmt(Expr *i, Expr *t, Expr *s, Stmt *b): LoopStatement(t, b) { 
+ForStmt::ForStmt(Expr *i, Expr *t, Expr *s, Stmt *b): LoopStmt(t, b) { 
     Assert(i != NULL && t != NULL && s != NULL && b != NULL);
     (init=i)->SetParent(this);
     (step=s)->SetParent(this);
@@ -139,9 +147,9 @@ void IfStmt::Check() {
 void BreakStmt::Check() {
     Scope *s = scope;
     while (s != NULL) {
-        if (s->GetLoopStatement() != NULL)
+        if (s->GetLoopStmt() != NULL)
             return;
-        if (s->GetSwitchStatement() != NULL)
+        if (s->GetSwitchStmt() != NULL)
             return;
 
         s = s->GetParent();
@@ -216,28 +224,28 @@ void PrintStmt::Check() {
         args->Nth(i)->Check();
 }
 
-SwitchStatement::SwitchStatement(Expr *e, List<CaseStmt*> *s) {
+SwitchStmt::SwitchStmt(Expr *e, List<CaseStmt*> *s) {
     Assert(e != NULL && s != NULL); // DefaultStmt can be NULL
     (expr=e)->SetParent(this);
     (caseStmts=s)->SetParentAll(this);
 }
 
-void SwitchStatement::ScopeMaker(Scope *parent) {
+void SwitchStmt::ScopeMaker(Scope *parent) {
     scope->SetParent(parent);
-    scope->SetSwitchStatement(this);
+    scope->SetSwitchStmt(this);
 
     expr->ScopeMaker(scope);
     for (int i = 0, n = caseStmts->NumElements(); i < n; ++i)
         caseStmts->Nth(i)->ScopeMaker(scope);
 }
 
-void SwitchStatement::Check() {
+void SwitchStmt::Check() {
     expr->Check();
     for (int i = 0, n = caseStmts->NumElements(); i < n; ++i)
         caseStmts->Nth(i)->Check();
 }
 
-SwitchStatement::CaseStmt::CaseStmt(Expr *e, List<Stmt*> *s) {
+SwitchStmt::CaseStmt::CaseStmt(Expr *e, List<Stmt*> *s) {
     Assert(s != NULL);
     
     intConst=e;
@@ -247,13 +255,13 @@ SwitchStatement::CaseStmt::CaseStmt(Expr *e, List<Stmt*> *s) {
     (caseBody=s)->SetParentAll(this);
 }
 
-void SwitchStatement::CaseStmt::ScopeMaker(Scope *parent) {
+void SwitchStmt::CaseStmt::ScopeMaker(Scope *parent) {
     scope->SetParent(parent);
     for (int i = 0, n = caseBody->NumElements(); i < n; ++i)
         caseBody->Nth(i)->ScopeMaker(scope);
 }
 
-void SwitchStatement::CaseStmt::Check() {
+void SwitchStmt::CaseStmt::Check() {
     for (int i = 0, n = caseBody->NumElements(); i < n; ++i)
         caseBody->Nth(i)->Check();
 }

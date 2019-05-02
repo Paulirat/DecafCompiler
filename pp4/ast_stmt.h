@@ -23,9 +23,9 @@ class VarDecl;
 class Expr;
 class Type;
 class ClassDecl;
-class LoopStatement;
+class LoopStmt;
 class FnDecl;
-class SwitchStatement;
+class SwitchStmt;
 
 class Scope
 {
@@ -35,12 +35,12 @@ class Scope
   public:
     Hashtable<Decl*> *table;
     ClassDecl *classDecl;
-    LoopStatement *LoopStatement;
-    SwitchStatement *SwitchStatement;
+    LoopStmt *loopStmt;
+    SwitchStmt *switchStmt;
     FnDecl *fnDecl;
 
   public:
-    Scope() : table(new Hashtable<Decl*>), classDecl(NULL), LoopStatement(NULL),
+    Scope() : table(new Hashtable<Decl*>), classDecl(NULL), loopStmt(NULL),
               fnDecl(NULL) {}
 
     void SetParent(Scope *p) { parent = p; }
@@ -49,11 +49,11 @@ class Scope
     void SetClassDecl(ClassDecl *d) { classDecl = d; }
     ClassDecl* Get_Class_Declaration() { return classDecl; }
 
-    void SetLoopStatement(LoopStatement *s) { LoopStatement = s; }
-    LoopStatement* GetLoopStatement() { return LoopStatement; }
+    void SetLoopStmt(LoopStmt *s) { loopStmt = s; }
+    LoopStmt* GetLoopStmt() { return loopStmt; }
     
-    void SetSwitchStatement(SwitchStatement *s) { SwitchStatement = s; }
-    SwitchStatement* GetSwitchStatement() { return SwitchStatement; }
+    void SetSwitchStmt(SwitchStmt *s) { switchStmt = s; }
+    SwitchStmt* GetSwitchStmt() { return switchStmt; }
 
     void SetFnDecl(FnDecl *d) { fnDecl = d; }
     FnDecl* GetFnDecl() { return fnDecl; }
@@ -113,15 +113,15 @@ class ConditionalStmt : public Stmt
     virtual void Check();
 };
 
-class LoopStatement : public ConditionalStmt 
+class LoopStmt : public ConditionalStmt 
 {
   public:
-    LoopStatement(Expr *testExpr, Stmt *body)
+    LoopStmt(Expr *testExpr, Stmt *body)
             : ConditionalStmt(testExpr, body) {}
     virtual void ScopeMaker(Scope *parent);
 };
 
-class ForStmt : public LoopStatement 
+class ForStmt : public LoopStmt 
 {
   protected:
     Expr *init, *step;
@@ -130,10 +130,10 @@ class ForStmt : public LoopStatement
     ForStmt(Expr *init, Expr *test, Expr *step, Stmt *body);
 };
 
-class WhileStmt : public LoopStatement 
+class WhileStmt : public LoopStmt 
 {
   public:
-    WhileStmt(Expr *test, Stmt *body) : LoopStatement(test, body) {}
+    WhileStmt(Expr *test, Stmt *body) : LoopStmt(test, body) {}
 };
 
 class IfStmt : public ConditionalStmt 
@@ -176,7 +176,7 @@ class PrintStmt : public Stmt
     void Check();
 };
 
-class SwitchStatement : public Stmt
+class SwitchStmt : public Stmt
 {
   public:
     class CaseStmt : public Stmt
@@ -196,7 +196,7 @@ class SwitchStatement : public Stmt
     List<CaseStmt*> *caseStmts;
 
   public:
-    SwitchStatement(Expr *expr, List<CaseStmt*> *caseStmts);
+    SwitchStmt(Expr *expr, List<CaseStmt*> *caseStmts);
     void ScopeMaker(Scope *parent);
     void Check();
 };

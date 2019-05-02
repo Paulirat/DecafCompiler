@@ -38,7 +38,7 @@ class Decl : public Node
     const char* Name() { return id->Name(); }
     Scope* GetScope() { return scope; }
 
-    virtual void ScopeMake(Scope *parent);
+    virtual void ScopeMaker(Scope *parent);
     virtual void Check() = 0;
 };
 
@@ -73,7 +73,7 @@ class ClassDecl : public Decl
   public:
     ClassDecl(Identifier *name, NamedType *extends, 
               List<NamedType*> *implements, List<Decl*> *members);
-    void ScopeMake(Scope *parent);
+    void ScopeMaker(Scope *parent);
     void Check();
     NamedType* TypeFinder() { return new NamedType(id); }
     NamedType* GetExtends() { return extends; }
@@ -96,7 +96,7 @@ class InterfaceDecl : public Decl
     
   public:
     InterfaceDecl(Identifier *name, List<Decl*> *members);
-    void ScopeMake(Scope *parent);
+    void ScopeMaker(Scope *parent);
     void Check();
     Type* TypeFinder() { return new NamedType(id); }
     List<Decl*>* GetMembers() { return members; }
@@ -118,7 +118,7 @@ class FnDecl : public Decl
     bool AreEquivalent(Decl *other);
     Type* GetReturnType() { return returnType; }
     List<VarDecl*>* GetFormals() { return formals; }
-    void ScopeMake(Scope *parent);
+    void ScopeMaker(Scope *parent);
     
 };
 
